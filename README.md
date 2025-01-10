@@ -2,6 +2,18 @@
 
 This project is a Discord bot integrated with GitHub webhooks to provide real-time notifications about issue events (created/closed) in specific repositories. The bot listens to webhook events via a Flask server and sends notifications to a designated Discord channel.
 
+# 📁 File Structure and Explanation
+
+`main.py`
+Purpose: The main bot file that connects to Discord and handles basic setup.
+
+`webhook_server.py`
+Purpose: Flask-based webhook server that listens to GitHub events.
+
+- verify_signature(payload, signature): Validates incoming webhook payloads for security.
+- github_webhook(): Handles incoming webhook requests and sends appropriate notifications to Discord.
+- notify_discord(message): Sends a message to the specified Discord channel.
+
 # 👨‍💻 For Developer
 
 ## Steps to Run
