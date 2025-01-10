@@ -33,9 +33,9 @@ def github_webhook():
     url = issue.get("html_url")
 
     if action == "opened":
-      notify_discord(f"New issue created: {title} - {url}")
+      notify_discord(f":hourglass: New issue created: {title} - {url}")
     elif action == "closed":
-      notify_discord(f"Issue closed: {title} - {url}")
+      notify_discord(f":white_check_mark: Issue closed: {title} - {url}")
 
   return jsonify({"status": "ok"})
 
