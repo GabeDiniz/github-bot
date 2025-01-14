@@ -51,6 +51,24 @@ def github_webhook():
     elif action == "closed":
       notify_discord(discord_channel_id, f":white_check_mark: Issue closed: {title} - {url}")
 
+  # Handle MR (Merge Request) Event
+  elif event == "pull_request":
+    action = data.get("action")  # For MR: "opened", "closed", "merged"
+    pr = data.get("pull_request", {})
+    title = pr.get("title")
+    url = pr.get("html_url")
+    base_branch = pr.get("base", {}).get("ref")  # Target branch
+    user = pr.get("user", {}).get("login")
+
+    if action == "opened":
+      notify_discord(discord_channel_id, f":sparkles: New pull request opened by {user}: {title} - {url}")
+    elif action == "closed":
+      merged = pr.get("merged", False)  # Check if the PR was merged
+      if merged:
+        notify_discord(discord_channel_id, f":tada: Pull request merged into `{base_branch}`: {title} - {url}")
+      else:
+        notify_discord(discord_channel_id, f":x: Pull request closed without merge: {title} - {url}")
+  
   return jsonify({"status": "ok"})
 
 # Notify Discord channel
