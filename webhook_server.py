@@ -17,11 +17,42 @@ app = Flask(__name__)
 
 # Verify GitHub payloads
 def verify_signature(payload, signature):
+  """
+  Validates the integrity of incoming GitHub webhook requests using HMAC SHA-256.
+  
+  GitHub webhooks send a cryptographic signature in the 'X-Hub-Signature-256' header.
+  This function generates an HMAC digest of the payload using the shared secret
+  and compares it to the received signature to ensure the request is authentic.
+  
+  Args:
+    payload (bytes): The raw request body from GitHub.
+    signature (str): The signature received from GitHub in the request headers.
+
+  Returns:
+    bool: True if the computed signature matches the received signature, False otherwise.
+  """
   mac = hmac.new(GITHUB_SECRET.encode(), payload, hashlib.sha256).hexdigest()
   return hmac.compare_digest(f"sha256={mac}", signature)
 
 @app.route("/webhook", methods=["POST"])
 def github_webhook():
+  """
+  Handles incoming GitHub webhook events and processes them accordingly.
+
+  This function:
+  - Validates the request signature to ensure authenticity.
+  - Extracts the event type from the GitHub request headers.
+  - Determines the repository name from the payload.
+  - Processes 'issues' and 'pull_request' events.
+  - Sends notifications to the appropriate Discord channel.
+
+  Supported Events:
+  - Issues: When an issue is opened or closed.
+  - Pull Requests: When a PR is opened, closed, or merged.
+
+  Returns:
+    JSON response indicating success or ignored status if the repository is not mapped.
+  """
   # Verify request
   payload = request.data
   signature = request.headers.get("X-Hub-Signature-256", "")
@@ -73,6 +104,16 @@ def github_webhook():
 
 # Notify Discord channel
 def notify_discord(channel_id, message):
+  """
+  Sends a message to a specified Discord channel using the Discord API.
+
+  Args:
+    channel_id (str): The Discord channel ID where the message should be sent.
+    message (str): The message content to be sent.
+
+  Returns:
+    None: Sends a POST request to the Discord API.
+  """
   url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
   headers = {"Authorization": f"Bot {BOT_KEY}"}
   payload = {"content": message}
