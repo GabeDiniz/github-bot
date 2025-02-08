@@ -16,7 +16,7 @@ Purpose: Flask-based webhook server that listens to GitHub events.
 
 # 👨‍💻 For Developer
 
-## Steps to Run
+## Steps to Run (local)
 
 #### Step 1: Start the Webhook Server
 
